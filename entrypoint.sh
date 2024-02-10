@@ -1,4 +1,6 @@
-#!/usr/bin/with-contenv bash
+#!/usr/bin/bash
+
+nginx -g "daemon off;" &
 
 APP_ROOT=/fdroid
 REPO_DIR="$APP_ROOT"/repo
@@ -32,9 +34,9 @@ fdroid init --no-prompt --quiet &> /dev/null || \
 	echo "fdroid: Initialisation did not succeed. The repo probably already exists."
 
 # Deploy the servier.
-echo "fdroid: Attempting to deploy server..."
-fdroid deploy -v &> /dev/null || \
-	echo "fdroid: Deployment did not succeed. The server probably has already been deployed."
+#echo "fdroid: Attempting to deploy server..."
+#fdroid deploy -v &> /dev/null || \
+#	echo "fdroid: Deployment did not succeed. The server probably has already been deployed."
 
 # Create key if not present.
 if [ ! -f "/$APP_ROOT"/keystore.p12 ]; then
@@ -43,17 +45,23 @@ if [ ! -f "/$APP_ROOT"/keystore.p12 ]; then
 		echo "fdroid: Could not generate key. Proceeding anyway..."
 fi
 
-# Download APKs.
-# Place download scripts (*.sh) in a folder mapped to /custom-cont-init.d.
-UPDATES_DIR=/custom-cont-init.d
-if [ -d $UPDATES_DIR ]; then
-	for i in $UPDATES_DIR/*.sh; do
-		bash "$i"
-	done
-fi
+while true
+do
+    # Download APKs.
+    # Place download scripts (*.sh) in a folder mapped to /custom-cont-init.d.
+    UPDATES_DIR=/custom-cont-init.d
+    if [ -d $UPDATES_DIR ]; then
+        for i in $UPDATES_DIR/*.sh; do
+            bash "$i"
+        done
+    fi
 
-# Update APK indices.
-echo "fdroid: Updating repo..."
+    # Update APK indices.
+    echo "fdroid: Updating repo..."
 
-# Print verbose message for troubleshooting.
-fdroid update -cv || echo "fdroid: Update did not succeed."
+    # Print verbose message for troubleshooting.
+    fdroid update -cv || echo "fdroid: Update did not succeed."
+
+    sleep $FDROID_UPDATE_INTERVAL
+done
+

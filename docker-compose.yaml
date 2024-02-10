@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  fdroid-server:
+    image: "jobmailer233/fdroid-server"
+    environment:
+      FDROID_REPO_URL: "http://localhost/repo"
+    ports:
+      - "8080:80"
+    volumes:
+      - "./fdroid:/fdroid"
