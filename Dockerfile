@@ -1,8 +1,5 @@
 FROM docker.io/library/debian:bookworm-slim
 
-LABEL author=austozi
-LABEL maintainer=austozi
-
 # Define environment variables.
 # These can be redefined at run time.
 ENV FDROID_REPO_NAME='F-Droid Repository'
